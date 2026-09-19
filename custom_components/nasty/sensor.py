@@ -7,7 +7,13 @@ from dataclasses import dataclass
 from typing import Any
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntity, SensorStateClass
-from homeassistant.const import PERCENTAGE, UnitOfInformation, UnitOfTemperature, UnitOfTime
+from homeassistant.const import (
+    PERCENTAGE,
+    UnitOfElectricPotential,
+    UnitOfInformation,
+    UnitOfTemperature,
+    UnitOfTime,
+)
 from homeassistant.core import callback
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
@@ -110,6 +116,22 @@ SYSTEM_SENSORS = (
         native_unit=PERCENTAGE,
         state_class=SensorStateClass.MEASUREMENT,
         icon="mdi:flash",
+    ),
+    NastySensorDescription(
+        key="ups_input_voltage",
+        name="UPS input voltage",
+        value=lambda data: data.ups.get("input_voltage"),
+        native_unit=UnitOfElectricPotential.VOLT,
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
+    ),
+    NastySensorDescription(
+        key="ups_output_voltage",
+        name="UPS output voltage",
+        value=lambda data: data.ups.get("output_voltage"),
+        native_unit=UnitOfElectricPotential.VOLT,
+        device_class=SensorDeviceClass.VOLTAGE,
+        state_class=SensorStateClass.MEASUREMENT,
     ),
 )
 
