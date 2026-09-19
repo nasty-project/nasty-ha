@@ -11,7 +11,7 @@ REST API. It does not contain or depend on code from an Unraid integration.
 - CPU temperature and load, memory use, uptime, system health, and active alerts
 - Filesystem capacity and mount state
 - SMART health and temperatures for discovered disks
-- UPS battery, runtime, load, and connectivity from NUT
+- UPS battery, runtime, load, input/output voltage, and connectivity from NUT
 - App runtime statistics
 - Optional start/stop switches for VMs and Apps
 - Reauthentication and privacy-redacted diagnostics
