@@ -1,0 +1,37 @@
+{
+  "config": {
+    "abort": {
+      "already_configured": "This NASty appliance is already configured.",
+      "unknown": "The configuration flow could not be completed."
+    },
+    "error": {
+      "cannot_connect": "Unable to connect to the NASty appliance.",
+      "invalid_auth": "The API token was rejected.",
+      "invalid_url": "Enter a valid HTTP or HTTPS appliance URL.",
+      "unknown": "Unexpected response from the NASty appliance."
+    },
+    "step": {
+      "reauth_confirm": {
+        "data": {
+          "api_token": "API token"
+        },
+        "description": "Enter a replacement API token for this NASty appliance.",
+        "title": "Reauthenticate NASty"
+      },
+      "user": {
+        "data": {
+          "api_token": "API token",
+          "enable_controls": "Enable VM and App controls",
+          "url": "Appliance URL",
+          "verify_ssl": "Verify TLS certificate"
+        },
+        "data_description": {
+          "enable_controls": "Requires an Operator or Admin token. Leave disabled for monitoring-only tokens.",
+          "verify_ssl": "Disable only for an appliance using a certificate Home Assistant does not trust."
+        },
+        "description": "Connect using a NASty API token. A read-only token is sufficient unless controls are enabled.",
+        "title": "Connect to NASty"
+      }
+    }
+  }
+}
