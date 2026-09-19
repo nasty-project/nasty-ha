@@ -34,6 +34,8 @@ certificate verification is enabled by default.
 
 ### HACS
 
+[![Open your Home Assistant instance and add the NASty repository to HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=nasty-project&repository=nasty-ha&category=integration)
+
 Until the repository is included in the HACS default catalog:
 
 1. Open **HACS** in Home Assistant.
