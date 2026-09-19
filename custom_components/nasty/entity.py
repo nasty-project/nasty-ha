@@ -18,6 +18,14 @@ def disk_identifier(disk: dict[str, Any]) -> str:
     return f"{disk['device']}:{disk.get('transport') or 'direct'}"
 
 
+def disk_display_name(disk: dict[str, Any]) -> str:
+    """Return a human-readable name that distinguishes identical disk models."""
+    device = str(disk["device"]).rsplit("/", 1)[-1]
+    if transport := disk.get("transport"):
+        device = f"{device}, {transport}"
+    return f"{disk.get('model') or 'Disk'} ({device})"
+
+
 class NastyEntity(CoordinatorEntity[DataUpdateCoordinator[Any]]):
     """Base entity associated with one NASty appliance."""
 

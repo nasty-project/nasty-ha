@@ -10,7 +10,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import NastyConfigEntry
 from .coordinator import NastyFastCoordinator, NastyStorageCoordinator
-from .entity import NastyEntity, disk_identifier
+from .entity import NastyEntity, disk_display_name, disk_identifier
 
 
 class NastySystemHealthBinarySensor(NastyEntity, BinarySensorEntity):
@@ -65,7 +65,7 @@ class NastyDiskHealthBinarySensor(NastyEntity, BinarySensorEntity):
     ) -> None:
         self._disk_id = disk_identifier(disk)
         super().__init__(entry, coordinator, f"disk_{self._disk_id}_health")
-        self._attr_name = f"{disk.get('model') or disk['device']} health"
+        self._attr_name = f"{disk_display_name(disk)} health"
 
     @property
     def _disk(self) -> dict[str, Any]:

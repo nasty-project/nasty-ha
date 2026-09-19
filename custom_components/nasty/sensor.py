@@ -13,7 +13,7 @@ from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import NastyConfigEntry
 from .coordinator import NastyFastCoordinator, NastyFastData, NastyStorageCoordinator
-from .entity import NastyEntity, disk_identifier
+from .entity import NastyEntity, disk_display_name, disk_identifier
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -177,6 +177,42 @@ class NastyFilesystemUsageSensor(NastyEntity, SensorEntity):
         }
 
 
+class NastyFilesystemSizeSensor(NastyEntity, SensorEntity):
+    _attr_device_class = SensorDeviceClass.DATA_SIZE
+    _attr_native_unit_of_measurement = UnitOfInformation.BYTES
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_icon = "mdi:database"
+
+    def __init__(
+        self,
+        entry: NastyConfigEntry,
+        coordinator: NastyStorageCoordinator,
+        filesystem: dict[str, Any],
+        key: str,
+        label: str,
+    ) -> None:
+        self._uuid = filesystem["uuid"]
+        self._key = key
+        super().__init__(entry, coordinator, f"filesystem_{self._uuid}_{key}")
+        self._attr_name = f"{filesystem['name']} {label}"
+
+    @property
+    def native_value(self) -> int | None:
+        filesystem = next(
+            (fs for fs in self.coordinator.data.filesystems if fs.get("uuid") == self._uuid), None
+        )
+        if not filesystem:
+            return None
+        value = filesystem.get(self._key)
+        return int(value) if value is not None else None
+
+    @property
+    def available(self) -> bool:
+        return super().available and any(
+            fs.get("uuid") == self._uuid for fs in self.coordinator.data.filesystems
+        )
+
+
 class NastyDiskTemperatureSensor(NastyEntity, SensorEntity):
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
@@ -190,7 +226,7 @@ class NastyDiskTemperatureSensor(NastyEntity, SensorEntity):
     ) -> None:
         self._disk_id = disk_identifier(disk)
         super().__init__(entry, coordinator, f"disk_{self._disk_id}_temperature")
-        self._attr_name = f"{disk.get('model') or disk['device']} temperature"
+        self._attr_name = f"{disk_display_name(disk)} temperature"
 
     @property
     def native_value(self) -> int | None:
@@ -229,7 +265,25 @@ async def async_setup_entry(
             uuid = filesystem.get("uuid")
             if uuid and uuid not in known_filesystems:
                 known_filesystems.add(uuid)
-                entities.append(NastyFilesystemUsageSensor(entry, runtime.storage, filesystem))
+                entities.extend(
+                    (
+                        NastyFilesystemUsageSensor(entry, runtime.storage, filesystem),
+                        NastyFilesystemSizeSensor(
+                            entry,
+                            runtime.storage,
+                            filesystem,
+                            "total_bytes",
+                            "total space",
+                        ),
+                        NastyFilesystemSizeSensor(
+                            entry,
+                            runtime.storage,
+                            filesystem,
+                            "available_bytes",
+                            "free space",
+                        ),
+                    )
+                )
         for disk in runtime.storage.data.disks:
             disk_id = disk_identifier(disk)
             if disk_id and disk_id not in known_disks and disk.get("temperature_c") is not None:
